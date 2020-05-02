@@ -10,7 +10,7 @@ description: A new Flutter application.
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.1.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -21,11 +21,14 @@ dependencies:
   font_awesome_flutter: ^8.2.0
   http: ^0.12.0+2
   flutter_facebook_login: ^1.2.0
+  firebase_auth:
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+module:
+  androidX: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
