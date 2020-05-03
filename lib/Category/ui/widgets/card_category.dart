@@ -47,7 +47,6 @@ class _CardCategory extends State<CardCategory> {
     );
 
     return Container(
-
       child: new InkWell(
         onTap: onPressedButton,
         child: Column(
