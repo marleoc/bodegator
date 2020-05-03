@@ -1,39 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_app/services/authservice.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as JSON;
+import 'package:flutter/services.dart';
 
+import 'package:bodegator/User/ui/screens/home_screen.dart';
 
-void main() => runApp(MyApp());
+void main(){
+  SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
+          statusBarBrightness: Brightness.light
+      )
+  );
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Mi app',
+      title: 'Flutter Demo',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Bodegator'),
+      home: new HomeScreen()
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-
   MyHomePage({Key key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -46,70 +40,24 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   final String title;
+
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage>{
-  final phoneNumController = TextEditingController();
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
 
-
-
-  @override
-  void dispose() {
-    phoneNumController.dispose();
-    super.dispose();
-  }
-
-  bool _isLoggedIn = false;
-  Map userProfile;
-  String _typeRegister = '';
-  final facebookLogin = FacebookLogin();
-
-
-  _loginWithMobile() {
+  void _incrementCounter() {
     setState(() {
-      _typeRegister = 'Mobile';
-      //selectedUser = const Item('+51',Icon(Icons.map,color:  Colors.red,));
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
     });
   }
-
-  _loginWithFB() async{
-
-    final result = await facebookLogin.logInWithReadPermissions(['email']);
-
-    switch (result.status) {
-      case FacebookLoginStatus.loggedIn:
-        final token = result.accessToken.token;
-        final graphResponse = await http.get('https://graph.facebook.com/v2.12/me?fields=name,picture,email&access_token=${token}');
-        final profile = JSON.jsonDecode(graphResponse.body);
-        print(profile);
-        setState(() {
-          userProfile = profile;
-          _isLoggedIn = true;
-          _typeRegister = 'Facebook';
-        });
-        break;
-
-      case FacebookLoginStatus.cancelledByUser:
-        setState(() => _isLoggedIn = false );
-        _typeRegister = '';
-        break;
-      case FacebookLoginStatus.error:
-        setState(() => _isLoggedIn = false );
-        _typeRegister = '';
-        break;
-    }
-
-  }
-
-  _logout(){
-      facebookLogin.logOut();
-      setState(() {
-        _isLoggedIn = false;
-        _typeRegister = '';
-      });
-    }
 
   @override
   Widget build(BuildContext context) {
@@ -128,64 +76,38 @@ class _MyHomePageState extends State<MyHomePage>{
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child:
-            _isLoggedIn && _typeRegister == 'Facebook'
-            ?
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Image.network(userProfile["picture"]["data"]["url"], height: 50.0, width: 50.0,),
-                Text(userProfile["name"]),
-                OutlineButton( child: Text("Logout"), onPressed: (){
-                  _logout();
-                },)
-              ],
-            )
-            :
-            _typeRegister == 'Mobile' ?
-              AuthService().handleAuth()
-            :
-            Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Crea tu cuenta en Bodegator',
-//                style: Theme.of(context).textTheme.display1,
-                textAlign: TextAlign.center
-              ),
-              const SizedBox(height: 90),
-              RaisedButton.icon(
-              onPressed: (){ _loginWithMobile(); },
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(10.0))),
-              label: Text('Con tu número celular',
-                style: TextStyle(color: Colors.white),),
-              icon: Icon(FontAwesomeIcons.mobile, color:Colors.white,),
-              textColor: Colors.white,
-              splashColor: Colors.deepOrange,
-              color: Colors.orange,),
-              RaisedButton.icon(
-              onPressed: (){ _loginWithFB(); },
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(10.0))),
-              label: Text('Facebook',
-                style: TextStyle(color: Colors.white),),
-              icon: Icon(FontAwesomeIcons.facebook, color:Colors.white,),
-              textColor: Colors.white,
-              splashColor: Colors.blueGrey,
-              color: Colors.blue,)
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Invoke "debug painting" (press "p" in the console, choose the
+          // "Toggle Debug Paint" action from the Flutter Inspector in Android
+          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
+          // to see the wireframe for each widget.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.display1,
+            ),
           ],
         ),
       ),
-//      floatingActionButton: FloatingActionButton(
-//        onPressed: _incrementCounter,
-//        tooltip: 'Increment',
-//        child: Icon(Icons.add),
-//      ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-
   }
-
 }
-
-
